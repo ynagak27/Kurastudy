@@ -23,6 +23,12 @@ News: `{topic, added, week, event_date, when, headline, body, why, source, url}`
 
 A new topic is one file in `content/topics/` (`name, short, lang, day, order, hue, blurb, framework, syllabus[{n, module, title, goal}]`). `hue` is one of plum, indigo, moss, ochre, teal.
 
+## Notifications
+
+- `public/sw.js` shows notifications; the switch at the bottom of the site registers a device (`functions/api/push.js`, stored in KV under `push:subs:<email>`).
+- `notifier/` is a separate scheduled Worker (`kurastudy-notifier`) connected to this same repo with root directory `notifier`. It is rebuilt on every push with `public/data/library.json` bundled in, checks every 5 minutes, and announces each lesson id it has not announced before (list kept in KV under `push:notified`).
+- Signing keys are generated on first use and kept in KV under `vapid`. Nothing secret is in the repo.
+
 ## Cloudflare settings
 
 - Pages project connected to this repo. Build command: none. Build output directory: `public`.

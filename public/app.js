@@ -336,6 +336,65 @@ function loadLibrary(){
     });
   }).catch(function(){if(!S.loaded.t){S.dbState="none";render()}});
 }
+/* ---------- notifications ---------- */
+var N={state:"wait",reg:null,sub:null,msg:""};
+var notifEl=document.getElementById("notif");
+function isIOS(){return /iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1)}
+function drawNotif(){
+  if(!notifEl)return;var h="";
+  if(N.state==="unsupported")h=isIOS()?"To get a notification when a lesson arrives, open Kura from its home-screen icon, then turn notifications on here.":"";
+  else if(N.state==="off")h='<button type="button" class="btn small" data-n="on">Turn on notifications</button><span>Get a notification on this device when a new lesson arrives.</span>';
+  else if(N.state==="on")h='<span>Notifications are on for this device.</span><button type="button" class="btn ghost small" data-n="test">Send a test</button><button type="button" class="btn ghost small" data-n="off">Turn off</button>';
+  else if(N.state==="blocked")h="<span>Notifications are blocked for Kura in this device's settings. Allow them there, then reload.</span>";
+  else if(N.state==="busy")h="<span>Working…</span>";
+  if(N.msg)h+='<span class="nmsg">'+esc(N.msg)+"</span>";
+  notifEl.innerHTML=h;
+}
+function keyBytes(k){var t=String(k).replace(/-/g,"+").replace(/_/g,"/"),b=atob(t+"=".repeat((4-t.length%4)%4)),o=new Uint8Array(b.length);for(var i=0;i<b.length;i++)o[i]=b.charCodeAt(i);return o}
+function pushApi(method,body){
+  return fetch("/api/push",{method:method,credentials:"same-origin",redirect:"manual",cache:"no-store",
+    headers:body?{"content-type":"application/json"}:undefined,body:body?JSON.stringify(body):undefined})
+  .then(function(r){if(r.type==="opaqueredirect")throw new Error("sign in again first");
+    return r.json().then(function(j){if(!r.ok)throw new Error(j.error||("error "+r.status));return j})});
+}
+function initNotif(){
+  if(!("serviceWorker" in navigator)){N.state="unsupported";drawNotif();return}
+  navigator.serviceWorker.addEventListener("message",function(e){if(e.data&&e.data.kuraGo)go(String(e.data.kuraGo))});
+  navigator.serviceWorker.register("/sw.js").then(function(){return navigator.serviceWorker.ready}).then(function(reg){
+    N.reg=reg;
+    if(!("PushManager" in window)||!("Notification" in window)||!reg.pushManager){N.state="unsupported";drawNotif();return}
+    if(Notification.permission==="denied"){N.state="blocked";drawNotif();return}
+    return reg.pushManager.getSubscription().then(function(sub){
+      N.sub=sub;N.state=sub?"on":"off";drawNotif();
+      if(sub)pushApi("POST",{subscription:sub.toJSON()}).catch(function(){});
+    });
+  }).catch(function(){N.state="unsupported";drawNotif()});
+}
+function notifOn(){
+  var ask;try{ask=Notification.requestPermission()}catch(e){ask=Promise.reject(e)}
+  N.state="busy";N.msg="";drawNotif();
+  Promise.resolve(ask).then(function(p){
+    if(p!=="granted"){N.state=p==="denied"?"blocked":"off";drawNotif();return}
+    return pushApi("GET").then(function(j){return N.reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:keyBytes(j.publicKey)})})
+      .then(function(sub){N.sub=sub;return pushApi("POST",{subscription:sub.toJSON()})})
+      .then(function(){N.state="on";N.msg="";drawNotif()});
+  }).catch(function(e){N.state=N.sub?"on":"off";N.msg="Could not turn notifications on ("+((e&&e.message)||"error")+").";drawNotif()});
+}
+function notifOff(){
+  var sub=N.sub;if(!sub)return;N.state="busy";N.msg="";drawNotif();
+  var ep=sub.endpoint;
+  sub.unsubscribe().catch(function(){}).then(function(){return pushApi("DELETE",{endpoint:ep}).catch(function(){})})
+    .then(function(){N.sub=null;N.state="off";drawNotif()});
+}
+function notifTest(){
+  if(!N.sub)return;N.msg="Sending…";drawNotif();
+  pushApi("POST",{test:true,endpoint:N.sub.endpoint}).then(function(){N.msg="Test sent. It should appear within a few seconds."},
+    function(e){N.msg="The test could not be sent ("+((e&&e.message)||"error")+")."}).then(drawNotif);
+}
+if(notifEl)notifEl.addEventListener("click",function(e){var b=e.target.closest("[data-n]");if(!b)return;
+  if(b.dataset.n==="on")notifOn();else if(b.dataset.n==="off")notifOff();else if(b.dataset.n==="test")notifTest()});
+initNotif();
+
 render();
 loadLibrary().then(function(){render()});
 pullProgress();
