@@ -23,6 +23,10 @@ News: `{topic, added, week, event_date, when, headline, body, why, source, url}`
 
 A new topic is one file in `content/topics/` (`name, short, lang, day, order, hue, blurb, framework, syllabus[{n, module, title, goal}]`). `hue` is one of plum, indigo, moss, ochre, teal.
 
+## The storehouse
+
+The home screen shows one shelf per topic with a place for each syllabus lesson. A finished lesson is drawn as a bottle, cask or trunk (gold trim for a perfect quiz score); a published but unfinished one as a dashed outline. The cedar ball (sugidama) is green when the last activity was within 2 days and browns over the following 12. Activity is the newest `at` among progress entries; finishing a review writes the reserved entry `zz-activity`. All of it is drawn in `public/app.js` from existing data, with no extra fields in lessons.
+
 ## Notifications
 
 - `public/sw.js` shows notifications; the switch at the bottom of the site registers a device (`functions/api/push.js`, stored in KV under `push:subs:<email>`).

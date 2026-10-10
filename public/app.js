@@ -1,6 +1,6 @@
 (function(){
 "use strict";
-var S={topics:{},lessons:{},news:[],progress:{},sample:null,loaded:{t:false,l:false,n:false},
+var S={slot:null,fresh:null,topics:{},lessons:{},news:[],progress:{},sample:null,loaded:{t:false,l:false,n:false},
        dbState:"wait",view:"home",quiz:{},review:{},ask:null,md:{},sync:{state:"wait",email:""},built:"",fetched:0};
 var main=document.getElementById("main");
 var DAYS={Mon:"Monday",Tue:"Tuesday",Wed:"Wednesday",Thu:"Thursday",Fri:"Friday",Sat:"Saturday",Sun:"Sunday"};
@@ -54,10 +54,91 @@ function sortedNews(tid){
     return String(b.added||"").localeCompare(String(a.added||""))||String(b.event_date||"").localeCompare(String(a.event_date||""))});
 }
 
+/* ---------- the storehouse ---------- */
+var ACT="zz-activity";
+var GLASS=["#3F5B3A","#6B2340","#8A5A1E","#A8923F","#7A1F2B","#2F4858"];
+var STRAW=["#D8C58C","#CDB57A","#E0D2A4","#C4AE78","#D2BE90","#DCCB9A"];
+var CREST=["#2B4A8B","#1F6F78","#7B2D4E","#3D3A7A","#8A4B16","#2C6A4D"];
+var TRUNK=["#2C6A4D","#1B6876","#855610","#5B4A8A","#8C3B2E","#3F5B3A"];
+var GOLD="#C9A227";
+function modIndex(t,n){var seen=[],idx=0;(t.syllabus||[]).some(function(s){if(seen.indexOf(s.module)<0)seen.push(s.module);if(s.n===n){idx=seen.indexOf(s.module);return true}return false});return idx}
+function itemKind(t){return t.id==="wine"?"bottle":t.id==="japan"?"cask":t.id==="uk"?"trunk":["bottle","cask","trunk"][((t.order||1)-1)%3]}
+function num2(n){return String(n).padStart(2,"0")}
+function itemSvg(kind,n,m,state,gold){
+  var ghost=state!=="done",o='<svg viewBox="0 0 28 60" aria-hidden="true" focusable="false">';
+  var txt=function(x,y,fill){return '<text x="'+x+'" y="'+y+'" text-anchor="middle" font-family="IBM Plex Mono,ui-monospace,monospace" font-size="7.5" font-weight="500" fill="'+fill+'">'+num2(n)+"</text>"};
+  if(kind==="bottle"){
+    var body="M11.5 20 C11.5 26 5 26 5 33 V55 a3 3 0 0 0 3 3 H20 a3 3 0 0 0 3 -3 V33 C23 26 16.5 26 16.5 20 Z";
+    if(ghost)return o+'<g fill="none" stroke="currentColor" stroke-width="1.2" stroke-dasharray="2.5 2"><rect x="11" y="3" width="6" height="17" rx="1.5"/><path d="'+body+'"/></g>'+txt(14,47,"currentColor")+"</svg>";
+    var g=GLASS[m%GLASS.length];
+    return o+'<rect x="11.5" y="9" width="5" height="12" fill="'+g+'"/><path d="'+body+'" fill="'+g+'"/><rect x="10.8" y="2.5" width="6.4" height="9" rx="1.6" fill="'+(gold?GOLD:"#9AA39F")+'"/>'+
+      '<rect x="7" y="29" width="1.6" height="25" rx=".8" fill="#fff" opacity=".2"/><rect x="6.6" y="36" width="14.8" height="14" rx="1" fill="#F6F1E4"/>'+
+      '<rect x="6.6" y="36" width="14.8" height="2.2" fill="'+(gold?GOLD:g)+'" opacity="'+(gold?1:.55)+'"/>'+txt(14,47.6,"#17201E")+"</svg>";
+  }
+  if(kind==="cask"){
+    if(ghost)return o+'<g fill="none" stroke="currentColor" stroke-width="1.2" stroke-dasharray="2.5 2"><rect x="3.5" y="23" width="21" height="35" rx="5"/><circle cx="14" cy="41" r="7"/></g>'+txt(14,43.7,"currentColor")+"</svg>";
+    var sw=STRAW[m%STRAW.length],rope=gold?GOLD:"#8B6B3A";
+    return o+'<rect x="6.5" y="19.5" width="15" height="5" rx="2" fill="#7A5C34"/><rect x="3.5" y="23" width="21" height="35" rx="5" fill="'+sw+'"/>'+
+      '<path d="M6 30 L22 52 M22 30 L6 52" stroke="#fff" stroke-width="1" opacity=".28"/>'+
+      '<path d="M3.5 28.5 H24.5 M3.5 53 H24.5" stroke="'+rope+'" stroke-width="2.2"/>'+
+      '<circle cx="14" cy="41" r="7.2" fill="'+CREST[m%CREST.length]+'"/>'+txt(14,43.7,"#F6F1E4")+"</svg>";
+  }
+  if(ghost)return o+'<g fill="none" stroke="currentColor" stroke-width="1.2" stroke-dasharray="2.5 2"><path d="M10 27 V23.5 a2 2 0 0 1 2 -2 h4 a2 2 0 0 1 2 2 V27"/><rect x="3.5" y="27" width="21" height="31" rx="3"/></g>'+txt(14,46,"currentColor")+"</svg>";
+  var c=TRUNK[m%TRUNK.length],metal=gold?GOLD:"#C9CFCB";
+  return o+'<path d="M10 27 V23.5 a2 2 0 0 1 2 -2 h4 a2 2 0 0 1 2 2 V27" fill="none" stroke="#4A3A28" stroke-width="1.8"/><rect x="3.5" y="27" width="21" height="31" rx="3" fill="'+c+'"/>'+
+    '<rect x="6.5" y="27" width="2.4" height="31" fill="#000" opacity=".22"/><rect x="19.1" y="27" width="2.4" height="31" fill="#000" opacity=".22"/>'+
+    '<rect x="3.5" y="33" width="21" height="1.4" fill="'+metal+'" opacity=".9"/><rect x="12" y="31.6" width="4" height="4.2" rx=".8" fill="'+metal+'"/>'+
+    '<rect x="9.2" y="39" width="9.6" height="10.5" rx="1" fill="#F6F1E4"/>'+txt(14,46.6,"#17201E")+"</svg>";
+}
+function lastActive(){var best=0;Object.keys(S.progress).forEach(function(k){var d=S.progress[k],t=d&&Date.parse(d.at);if(t&&t>best)best=t});return best}
+function touchActivity(){var doc={lesson:ACT,done:true,score:0,total:0,at:new Date().toISOString()};S.progress[ACT]=doc;keepLocal(doc);pushProgress([doc])}
+function lerpHex(a,b,t){var o="#";for(var i=1;i<6;i+=2){var x=parseInt(a.substr(i,2),16),y=parseInt(b.substr(i,2),16);o+=("0"+Math.round(x+(y-x)*t).toString(16)).slice(-2)}return o}
+function sugidama(){
+  var la=lastActive(),days=la?Math.max(0,Math.floor((Date.now()-la)/864e5)):null;
+  var t=days==null?1:Math.min(1,Math.max(0,(days-2)/12));
+  var base=lerpHex("#4E7D3A","#8A6238",t),dark=lerpHex("#35592A","#5E4226",t),light=lerpHex("#7FAE5E","#B38A58",t),lines="";
+  for(var i=0;i<130;i++){var a=i*2.39996,r=43*Math.sqrt((i+.5)/130),x=60+Math.cos(a)*r,y=86+Math.sin(a)*r,dir=(i*7.131+Math.sin(i*12.9898)*43758.5453)%6.2832,dx=Math.cos(dir)*3.6,dy=Math.sin(dir)*3.6;
+    lines+='<line x1="'+(x-dx).toFixed(1)+'" y1="'+(y-dy).toFixed(1)+'" x2="'+(x+dx).toFixed(1)+'" y2="'+(y+dy).toFixed(1)+'" stroke="'+(i%3?dark:light)+'" stroke-width="1.3" stroke-linecap="round" opacity=".75"/>'}
+  var svg='<svg viewBox="0 0 120 134" aria-hidden="true" focusable="false"><path d="M8 16 L60 5 L112 16" fill="none" stroke="var(--wood)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>'+
+    '<line x1="60" y1="9" x2="60" y2="44" stroke="var(--wood)" stroke-width="2.2"/><defs><radialGradient id="sugiShade" cx="38%" cy="32%" r="75%"><stop offset="0" stop-color="#fff" stop-opacity=".22"/><stop offset=".55" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".28"/></radialGradient></defs>'+
+    '<circle cx="60" cy="86" r="44" fill="'+base+'"/>'+lines+'<circle cx="60" cy="86" r="44" fill="url(#sugiShade)"/></svg>';
+  var head,sub;
+  if(days==null){head="No cedar ball yet";sub="Finish a lesson and a fresh green one is hung at the door."}
+  else if(days<=2){head=days===0?"Hung fresh today":"Still green";sub=(days===0?"You studied today.":"Last studied "+(days===1?"yesterday":days+" days ago")+".")}
+  else if(days<14){head="Turning";sub="Last studied "+days+" days ago. A lesson or a review hangs a fresh one."}
+  else{head="Fully brown";sub="Last studied "+days+" days ago. A lesson or a review hangs a fresh one."}
+  return '<div class="sugi"><div class="ball">'+svg+'</div><div class="say"><strong>'+head+"</strong><span>"+sub+'</span><details><summary>What is this?</summary><p>A sugidama (杉玉) is a ball of cedar hung at a brewery door. It goes up green when the new sake is pressed and browns as the sake matures. Here it shows how recently you studied.</p></details></div></div>';
+}
+function storehouse(){
+  var ts=topicList(),stored=0,total=0,h="";
+  ts.forEach(function(t){
+    var syl=t.syllabus||[],kind=itemKind(t),done=0,slots="";
+    syl.forEach(function(s){
+      var l=lessonAt(t.id,s.n),p=l&&prog(l.id),state=p&&p.done?"done":l?"ready":"empty";
+      if(state==="done")done++;
+      var sel=S.slot&&S.slot.t===t.id&&S.slot.n===s.n,fresh=l&&S.fresh===l.id;
+      slots+='<button type="button" class="slot '+state+(sel?" sel":"")+(fresh?" fresh":"")+'" data-slot="'+esc(t.id)+":"+s.n+'" aria-pressed="'+(sel?"true":"false")+'" aria-label="Lesson '+s.n+", "+esc((l&&l.title)||s.title)+", "+(state==="done"?"stored":state==="ready"?"ready to study":"not yet published")+'">'+
+        (state==="empty"?'<i></i>':itemSvg(kind,s.n,modIndex(t,s.n),state,!!(p&&p.total&&p.score===p.total)))+"</button>";
+    });
+    stored+=done;total+=syl.length;
+    h+='<div class="rack '+hue(t)+'"><div class="rackhead"><a href="#t-'+esc(t.id)+'" data-go="t-'+esc(t.id)+'"'+(t.lang?' lang="'+esc(t.lang)+'"':"")+">"+esc(t.name)+'</a><span class="meta">'+done+" of "+syl.length+' stored</span></div><div class="boards">'+slots+"</div></div>";
+  });
+  var d="";
+  if(S.slot){
+    var t=S.topics[S.slot.t],sy=t&&(t.syllabus||[]).filter(function(x){return x.n===S.slot.n})[0];
+    if(t&&sy){var l=lessonAt(t.id,sy.n),p=l&&prog(l.id);
+      d='<div class="slotinfo '+hue(t)+'"'+(t.lang?' lang="'+esc(t.lang)+'"':"")+'><span class="meta">'+esc(t.short||t.name)+" · No. "+num2(sy.n)+" · "+esc(sy.module||"")+"</span><strong>"+esc((l&&l.title)||sy.title)+"</strong>"+
+        (p&&p.done?'<span class="note">Stored '+esc(fmtDate(String(p.at).slice(0,10)))+(p.total?" · quiz "+p.score+"/"+p.total+(p.score===p.total?" · gold for a perfect score":""):"")+'</span><a class="btn ghost small" href="#l-'+esc(l.id)+'" data-go="l-'+esc(l.id)+'">Reopen lesson</a>'
+         :l?'<span class="note">'+esc(sy.goal||"")+'</span><a class="btn small" href="#l-'+esc(l.id)+'" data-go="l-'+esc(l.id)+'">Start lesson</a>'
+         :'<span class="note">'+esc(sy.goal||"")+" Arrives in week "+sy.n+".</span>")+"</div>";}
+  }
+  return '<section class="store" aria-label="The storehouse"><div class="storehead">'+sugidama()+'<div class="count"><strong>'+stored+'</strong><span>of '+total+" stored</span></div></div>"+h+d+"</section>";
+}
+
 function vHome(){
   var ts=topicList();
   if(!ts.length)return emptyState();
-  var h='<h1>Your week</h1><p class="note" style="margin-top:10px">One lesson per topic arrives each week, with the news that goes with it. Finish the quiz to mark a lesson complete.</p><h2 class="sec">Topics</h2><div class="shelf">';
+  var h='<h1>The storehouse</h1><p class="note" style="margin-top:10px">Every lesson you finish is stored on its shelf. Tap any place on a shelf to see what belongs there.</p>'+storehouse()+'<h2 class="sec">This week</h2><div class="shelf">';
   ts.forEach(function(t){
     var up=nextUp(t.id),pub=lessonsOf(t.id).length,tot=(t.syllabus||[]).length;
     h+='<section class="card '+hue(t)+'"><div class="day">New lesson every '+esc(DAYS[t.day]||t.day||"week")+'</div><h3><a href="#t-'+esc(t.id)+'" data-go="t-'+esc(t.id)+'">'+esc(t.name)+"</a></h3>"+
@@ -109,7 +190,7 @@ function quizHtml(key,qs,title){
     h+="</div>"+(has?'<p class="why2"><b class="'+(pick===q.answer?"y":"n")+'">'+(pick===q.answer?"Correct":"Not quite")+"</b>"+esc(q.why||"")+(q.from?' <span class="meta">('+esc(q.from)+")</span>":"")+"</p>":"")+"</div>";
   });
   if(qs.length&&answered===qs.length){
-    h+='<div class="score"><strong>'+right+" / "+qs.length+'</strong><span class="note">'+(st.saveErr?esc(st.saveErr):st.saved?"Saved. This lesson is marked complete.":"")+'</span><button type="button" class="btn ghost small" data-retry="'+esc(key)+'">Try again</button></div>';
+    h+='<div class="score"><strong>'+right+" / "+qs.length+'</strong><span class="note">'+(st.saveErr?esc(st.saveErr):st.saved?(key.indexOf("l:")===0?"Stored. It is on its shelf in the storehouse.":"Review done."):"")+'</span><button type="button" class="btn ghost small" data-retry="'+esc(key)+'">Try again</button>'+(st.saved&&key.indexOf("l:")===0?'<a class="btn small" href="#home" data-go="home">See the storehouse</a>':"")+"</div>";
   }
   return h+"</section>";
 }
@@ -230,6 +311,7 @@ function emptyState(){
 function notFound(){return (S.loaded.t&&S.loaded.l)?'<div class="empty">That page is not in your library. <a href="#home" data-go="home">Back to the library</a></div>':emptyState()}
 function render(){
   foot();
+  if(S.fresh&&(S.view||"home")==="home")setTimeout(function(){S.fresh=null},1800);
   var v=S.view||"home",h;
   if(v==="home")h=vHome();
   else if(v==="ask")h=vAsk();
@@ -242,7 +324,7 @@ function render(){
 
 function saveProgress(lessonId,score,total,st){
   var doc={lesson:lessonId,done:true,score:score,total:total,at:new Date().toISOString()};
-  S.progress[lessonId]=doc;keepLocal(doc);st.saved=true;st.saveErr="";
+  S.progress[lessonId]=doc;keepLocal(doc);st.saved=true;st.saveErr="";S.fresh=lessonId;
   pushProgress([doc]).then(function(ok){
     if(!ok&&S.sync.state!=="local")st.saveErr="Saved on this device. It will sync to your other devices once the connection is back.";
     if(S.view==="l-"+lessonId){var y=window.scrollY;render();try{window.scrollTo(0,y)}catch(e){}}
@@ -250,7 +332,8 @@ function saveProgress(lessonId,score,total,st){
 }
 
 main.addEventListener("click",function(e){
-  var el=e.target.closest("[data-go],[data-quiz],[data-retry],[data-reload],#askGo,#askStop");if(!el)return;
+  var el=e.target.closest("[data-go],[data-quiz],[data-retry],[data-reload],[data-slot],#askGo,#askStop");if(!el)return;
+  if(el.dataset.slot){var sp=el.dataset.slot.split(":"),ns={t:sp[0],n:+sp[1]};S.slot=(S.slot&&S.slot.t===ns.t&&S.slot.n===ns.n)?null:ns;S.fresh=null;var ys=window.scrollY;render();try{window.scrollTo(0,ys)}catch(e3){}return}
   if(el.dataset.reload){location.reload();return}
   if(el.dataset.go){e.preventDefault();go(el.dataset.go);return}
   if(el.id==="askGo"){runAsk();return}
@@ -261,6 +344,7 @@ main.addEventListener("click",function(e){
     st.a[qi]=+el.dataset.o;
     var qs=key.indexOf("l:")===0?(S.lessons[key.slice(2)]||{}).quiz||[]:(S.review[key.slice(2)]||{}).qs||[];
     var n=Object.keys(st.a).length;
+    if(n===qs.length&&key.indexOf("r:")===0&&!st.saved){st.saved=true;touchActivity()}
     if(n===qs.length&&key.indexOf("l:")===0&&!st.saved){var right=0;qs.forEach(function(q,i){if(st.a[i]===q.answer)right++});saveProgress(key.slice(2),right,qs.length,st)}
     var y=window.scrollY;render();try{window.scrollTo(0,y)}catch(e2){}
   }
