@@ -1,0 +1,144 @@
+{
+ "name": "Japan in Britain",
+ "short": "Japan in Britain",
+ "lang": "en",
+ "day": "Fri",
+ "order": 3,
+ "hue": "moss",
+ "blurb": "Japan-related business in the UK across three strands: food and drink, travel, and culture. Each strand is taught as a sector (who buys, who sells, the route to the customer, the rules, what is changing), with history first.",
+ "framework": "Standard sector analysis plus the categories used in JNTO, JETRO and VisitBritain market reports.",
+ "syllabus": [
+  {
+   "n": 1,
+   "module": "A. Orientation and history",
+   "title": "Japan in Britain: the shape of the market",
+   "goal": "Describe the three strands and their rough size in two minutes"
+  },
+  {
+   "n": 2,
+   "module": "A. Orientation and history",
+   "title": "1862 to 1910: Japonisme and the great exhibitions",
+   "goal": "Explain how Victorian Britain first bought into Japan"
+  },
+  {
+   "n": 3,
+   "module": "A. Orientation and history",
+   "title": "1970s to 1990s: the corporate community and its shops",
+   "goal": "Describe the expatriate market that Japanese firms' arrival created"
+  },
+  {
+   "n": 4,
+   "module": "A. Orientation and history",
+   "title": "1992 onwards: from noodle bar to mainstream",
+   "goal": "Explain how British founders took Japanese food to the high street"
+  },
+  {
+   "n": 5,
+   "module": "B. Food and drink",
+   "title": "The restaurant landscape",
+   "goal": "Sort the market into chains, independents and high-end"
+  },
+  {
+   "n": 6,
+   "module": "B. Food and drink",
+   "title": "Who owns what",
+   "goal": "Tell British-founded brands from Japanese-owned ones, and why it matters"
+  },
+  {
+   "n": 7,
+   "module": "B. Food and drink",
+   "title": "Sushi in the supermarket",
+   "goal": "Explain the grab-and-go trade and who supplies it"
+  },
+  {
+   "n": 8,
+   "module": "B. Food and drink",
+   "title": "How dishes get adapted",
+   "goal": "Trace ramen, katsu curry and matcha from import to British staple"
+  },
+  {
+   "n": 9,
+   "module": "B. Food and drink",
+   "title": "Sake, whisky and tea",
+   "goal": "Describe how Japanese drinks are sold in the UK"
+  },
+  {
+   "n": 10,
+   "module": "B. Food and drink",
+   "title": "The supply chain",
+   "goal": "Map importers, wholesalers and specialist grocers"
+  },
+  {
+   "n": 11,
+   "module": "C. Travel",
+   "title": "Britons to Japan",
+   "goal": "Say who goes, when, where and what they spend"
+  },
+  {
+   "n": 12,
+   "module": "C. Travel",
+   "title": "The travel trade",
+   "goal": "Compare specialist tour operators, generalists and independent booking"
+  },
+  {
+   "n": 13,
+   "module": "C. Travel",
+   "title": "Japan's side of the trade",
+   "goal": "Explain what Japan's tourism bodies want from the UK market"
+  },
+  {
+   "n": 14,
+   "module": "C. Travel",
+   "title": "The reverse flow",
+   "goal": "Describe Japanese visitors and residents in the UK and what they buy"
+  },
+  {
+   "n": 15,
+   "module": "D. Culture",
+   "title": "Anime, manga and games",
+   "goal": "Describe the fan market and who sells to it"
+  },
+  {
+   "n": 16,
+   "module": "D. Culture",
+   "title": "Events and institutions",
+   "goal": "Compare commercial festivals with government-backed venues"
+  },
+  {
+   "n": 17,
+   "module": "D. Culture",
+   "title": "Design, fashion and homeware",
+   "goal": "Explain how Japanese retail brands position themselves in Britain"
+  },
+  {
+   "n": 18,
+   "module": "D. Culture",
+   "title": "Learning Japan",
+   "goal": "Describe the market for language, crafts, martial arts and wellness"
+  },
+  {
+   "n": 19,
+   "module": "E. Doing business",
+   "title": "The rules",
+   "goal": "Explain import rules for food and alcohol, work visas and the trade agreement"
+  },
+  {
+   "n": 20,
+   "module": "E. Doing business",
+   "title": "Japanese companies entering the UK",
+   "goal": "Compare entries that worked with ones that failed"
+  },
+  {
+   "n": 21,
+   "module": "E. Doing business",
+   "title": "What is changing",
+   "goal": "Identify the trends that will matter over five years"
+  },
+  {
+   "n": 22,
+   "module": "E. Doing business",
+   "title": "Where the gaps are",
+   "goal": "Weigh the main ways to act on what you have learned"
+  }
+ ]
+}

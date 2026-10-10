@@ -1,0 +1,144 @@
+{
+ "name": "Turkish wine",
+ "short": "Turkish wine",
+ "lang": "en",
+ "day": "Mon",
+ "order": 1,
+ "hue": "plum",
+ "blurb": "The Turkish wine industry as a business: vineyards, wineries, the rules, how wine reaches drinkers, and the restaurants and hotels wineries run. Follows the order wine business is formally taught, with Turkey as the example throughout.",
+ "framework": "WSET Diploma order (production, then business, then market), adapted to Turkey and weighted towards business.",
+ "syllabus": [
+  {
+   "n": 1,
+   "module": "A. Orientation and history",
+   "title": "A huge vineyard, a small wine industry",
+   "goal": "Explain the basic shape of Turkish wine in two minutes"
+  },
+  {
+   "n": 2,
+   "module": "A. Orientation and history",
+   "title": "Ancient Anatolia to the Ottomans",
+   "goal": "Trace wine from the Hittites through Byzantium to the minority winemakers of the empire"
+  },
+  {
+   "n": 3,
+   "module": "A. Orientation and history",
+   "title": "The Republic, Atatürk and the state monopoly",
+   "goal": "Explain how the state shaped wine from 1923 and who the first private houses were"
+  },
+  {
+   "n": 4,
+   "module": "A. Orientation and history",
+   "title": "1990 to today: the quality turn and the boutiques",
+   "goal": "Say why the modern industry is only about 30 years old, and what changed in 2013"
+  },
+  {
+   "n": 5,
+   "module": "A. Orientation and history",
+   "title": "The map: regions and what each is known for",
+   "goal": "Place any Turkish wine you meet in its region"
+  },
+  {
+   "n": 6,
+   "module": "B. The product",
+   "title": "A year in the vineyard",
+   "goal": "Follow a grower's calendar and its main risks"
+  },
+  {
+   "n": 7,
+   "module": "B. The product",
+   "title": "Native red grapes",
+   "goal": "Recognise Öküzgözü, Boğazkere and Kalecik Karası by style"
+  },
+  {
+   "n": 8,
+   "module": "B. The product",
+   "title": "Native whites and rediscovered grapes",
+   "goal": "Recognise Narince and Emir, and explain the revival movement"
+  },
+  {
+   "n": 9,
+   "module": "B. The product",
+   "title": "From grape to bottle",
+   "goal": "Describe how red, white, rosé and sparkling wines are made"
+  },
+  {
+   "n": 10,
+   "module": "B. The product",
+   "title": "Judging quality without appellations",
+   "goal": "Read a Turkish label and know what it does not tell you"
+  },
+  {
+   "n": 11,
+   "module": "C. The business",
+   "title": "Vineyard economics",
+   "goal": "Estimate what land, planting and yields mean for cost"
+  },
+  {
+   "n": 12,
+   "module": "C. The business",
+   "title": "Winery economics",
+   "goal": "Tell a grape-buying winery from an estate, and why it matters"
+  },
+  {
+   "n": 13,
+   "module": "C. The business",
+   "title": "Who's who: large houses and boutiques",
+   "goal": "Name the main producers and how they differ"
+  },
+  {
+   "n": 14,
+   "module": "C. The business",
+   "title": "Operating under the rules",
+   "goal": "Explain how licensing, tax and the promotion ban shape daily decisions"
+  },
+  {
+   "n": 15,
+   "module": "D. Route to market",
+   "title": "How wine is sold in Turkey",
+   "goal": "Trace a bottle from winery to shop, restaurant and hotel"
+  },
+  {
+   "n": 16,
+   "module": "D. Route to market",
+   "title": "Marketing without advertising",
+   "goal": "Describe what producers do instead, and what is risky"
+  },
+  {
+   "n": 17,
+   "module": "D. Route to market",
+   "title": "Wine tourism and the vineyard routes",
+   "goal": "Compare the routes and what a visitor business needs"
+  },
+  {
+   "n": 18,
+   "module": "D. Route to market",
+   "title": "Winery restaurants, hotels and wine bars",
+   "goal": "Explain why hospitality is part of the business model"
+  },
+  {
+   "n": 19,
+   "module": "E. Outside and ahead",
+   "title": "Exports",
+   "goal": "Say where Turkish wine sells abroad and what holds it back"
+  },
+  {
+   "n": 20,
+   "module": "E. Outside and ahead",
+   "title": "Lessons from Greece and Georgia",
+   "goal": "Compare Turkey with two neighbours that built export identities"
+  },
+  {
+   "n": 21,
+   "module": "E. Outside and ahead",
+   "title": "Climate, old vines and vineyard loss",
+   "goal": "Explain the long decline in vineyard area and who is resisting it"
+  },
+  {
+   "n": 22,
+   "module": "E. Outside and ahead",
+   "title": "Business models that work",
+   "goal": "Weigh the main ways to build a wine business in Turkey"
+  }
+ ]
+}
