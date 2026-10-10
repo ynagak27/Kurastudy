@@ -55,11 +55,12 @@ export async function onRequest(context) {
   if (env.DEV_EMAIL && (host === "localhost" || host === "127.0.0.1")) {
     email = env.DEV_EMAIL; // local testing only
   } else {
-    const token = request.headers.get("Cf-Access-Jwt-Assertion");
-    if (!token) return locked("Kura is locked", "The sign-in gate for this site is not switched on yet, so nothing is shown.", 403);
+    const cookie = (request.headers.get("Cookie") || "").match(/(?:^|;\s*)CF_Authorization=([^;]+)/);
+    const token = request.headers.get("Cf-Access-Jwt-Assertion") || (cookie && cookie[1]);
+    if (!token) return locked("Kura is locked", "The sign-in gate for this site is not switched on yet, so nothing is shown. (code: no-sign-in on " + host + ")", 403);
     let pay = null;
-    try { pay = await verify(token, env); } catch (e) { return locked("Kura is locked", "The sign-in could not be checked just now. Try again in a minute.", 503); }
-    if (!pay) return locked("Kura is locked", "This sign-in is not valid for this site.", 403);
+    try { pay = await verify(token, env); } catch (e) { return locked("Kura is locked", "The sign-in could not be checked just now. Try again in a minute. (code: check-failed " + String(e && e.message).slice(0, 60).replace(/[<>&]/g, "") + ")", 503); }
+    if (!pay) return locked("Kura is locked", "This sign-in is not valid for this site. (code: bad-sign-in)", 403);
     email = String(pay.email).toLowerCase();
   }
   const owners = (env.OWNER_EMAILS ? env.OWNER_EMAILS.split(",") : OWNERS).map((s) => s.trim().toLowerCase()).filter(Boolean);
